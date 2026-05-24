@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bradley Williams — Systems Administrator</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d12;
+    --surface: #0f1318;
+    --panel: #141920;
+    --border: #1e2a38;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --text: #c8d8e8;
+    --muted: #4a6070;
+    --white: #e8f2ff;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Barlow', sans-serif;
+    --display: 'Barlow Condensed', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,212,255,0.015) 2px,
+      rgba(0,212,255,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    padding: 80px 5% 60px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .prompt-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent3);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .prompt-tag::before { content: '> '; color: var(--muted); }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.25s;
+  }
+
+  h1 span {
+    display: block;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(0,212,255,0.4);
+  }
+
+  .tagline {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .status-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--panel);
+  }
+
+  .status-pill .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 8px var(--accent3);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-val {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,13,18,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5%;
+  }
+
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  nav a {
+    display: block;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-decoration: none;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 5% 80px;
+  }
+
+  section {
+    padding: 70px 0 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* ── CERTIFICATIONS ── */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .cert-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 22px 24px;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .cert-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 30px rgba(0,212,255,0.1);
+  }
+
+  .cert-card.orange { border-left-color: var(--accent2); }
+  .cert-card.orange:hover { box-shadow: 0 8px 30px rgba(255,107,53,0.1); }
+
+  .cert-card.green { border-left-color: var(--accent3); }
+  .cert-card.green:hover { box-shadow: 0 8px 30px rgba(57,255,20,0.1); }
+
+  .cert-vendor {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+
+  .cert-name {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .cert-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .cert-status {
+    position: absolute;
+    top: 16px; right: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cert-status.active {
+    background: rgba(57,255,20,0.1);
+    color: var(--accent3);
+    border: 1px solid rgba(57,255,20,0.3);
+  }
+
+  .cert-status.in-progress {
+    background: rgba(255,107,53,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(255,107,53,0.3);
+  }
+
+  /* ── SKILLS ── */
+  .skills-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .skill-group {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+
+  .skill-group-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-group-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .skill-item:last-child { margin-bottom: 0; }
+
+  .skill-name {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text);
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .skill-bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+    width: 0;
+    transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .skill-bar-fill.orange { background: var(--accent2); }
+  .skill-bar-fill.green { background: var(--accent3); }
+
+  .skill-pct {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 32px;
+    text-align: right;
+  }
+
+  /* ── Experience / TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 8px; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--border) 80%, transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 36px;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: fadeRight 0.6s ease forwards;
+  }
+
+  .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+  .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+  .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+  .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+  .timeline-item:nth-child(5) { animation-delay: 0.5s; }
+
+  .timeline-dot {
+    position: absolute;
+    left: -36px; top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 10px rgba(0,212,255,0.4);
+  }
+
+  .timeline-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+  }
+
+  .timeline-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+
+  .timeline-org {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .timeline-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  /* ── GOALS ── */
+  .goals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .goal-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .goal-card:hover { transform: translateY(-4px); }
+
+  .goal-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .goal-num {
+    font-family: var(--display);
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--border);
+    line-height: 1;
+    position: absolute;
+    bottom: 12px; right: 16px;
+    pointer-events: none;
+  }
+
+  .goal-quarter {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+  }
+
+  .goal-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+
+  .goal-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+
+  .goal-progress {
+    margin-top: 16px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  .goal-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0;
+    transition: width 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── TOOLS ── */
+  .tools-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tool-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+
+  .tool-tag:hover {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    border-color: rgba(0,212,255,0.4);
+  }
+
+  .tool-tag.highlight {
+    border-color: rgba(0,212,255,0.3);
+    color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeRight {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 5%;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .header-grid { grid-template-columns: 1fr; }
+    .status-badge { align-items: flex-start; }
+    .stat-row { justify-content: flex-start; }
+    .stat { text-align: left; }
+    .skills-layout { grid-template-columns: 1fr; }
+    .goals-grid { grid-template-columns: 1fr; }
+    nav ul { overflow-x: auto; }
+    .skill-name { width: 110px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-grid">
+    <div>
+      <h1>Bradley<br><span>Williams</span></h1>
+      <div class="tagline">// Systems Administrator · Infrastructure · Security · Cloud</div>
+    </div>
+    <div class="status-badge">
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val">5+</div>
+          <div class="stat-label">Years Exp.</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">2</div>
+          <div class="stat-label">Certs Held</div>
+        </div>
+        <div class="stat">
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── NAV ── -->
+<nav>
+  <ul>
+    <li><a href="#certifications">Certifications</a></li>
+    <!--<li><a href="#skills">Skills</a></li>-->
+    <li><a href="#Experience">Experience</a></li>
+    <li><a href="#goals">Goals</a></li>
+    <!--<li><a href="#tools">Tools & Stack</a></li>-->
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ── CERTIFICATIONS ── -->
+  <section id="certifications">
+    <div class="section-header">
+      <span class="section-tag">01 //</span>
+      <h2>Certifications</h2>
+    </div>
+    <div class="certs-grid">
+      <div class="cert-card">
+        <div class="cert-status active">Active</div>
+        <div class="cert-vendor">Microsoft</div>
+        <div class="cert-name">Azure Fundamentals</div>
+        <div class="cert-id">AZ-900</div>
+      </div>
+	<div class="cert-card">
+        <div class="cert-status active">Active</div>
+        <div class="cert-vendor">Carroll Community College</div>
+        <div class="cert-name">Network Security</div>
+      </div>
+      <div class="cert-card orange">
+        <div class="cert-status in-progress">IN PROGRESS</div>
+        <div class="cert-vendor">Microsoft</div>
+        <div class="cert-name">Azure Administrator<br>Associate</div>
+        <div class="cert-id">AZ-104 · Q2 2026</div>
+      </div>
+    </div>
+  </section>
+
+<!-- ── EXPERIENCE ── -->
+  <section id="Experience">
+    <div class="section-header">
+      <span class="section-tag">02 //</span>
+      <h2>Experience</h2>
+    </div>
+    <div class="timeline">
+
+      <!-- JOB 4 — 1 position (most recent) -->
+      <div class="timeline-item timeline-company">
+        <div class="timeline-dot timeline-dot-company"></div>
+        <div class="timeline-company-name">DeepHealth</div>
+        <div class="timeline-company-range">2024 — Present · Remote</div>
+        <div class="timeline-positions">
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Systems Administrator</div>
+              <div class="timeline-date">February 2024 — Present</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOB 3 — 3 positions -->
+      <div class="timeline-item timeline-company">
+        <div class="timeline-dot timeline-dot-company"></div>
+        <div class="timeline-company-name">RadNet</div>
+        <div class="timeline-company-range">2020 - 2024 · Baltimore, MD</div>
+        <div class="timeline-positions">
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Systems Administrator</div>
+              <div class="timeline-date">June 2023 - February 2024</div>
+            </div>
+          </div>
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Junior Systems Administrator</div>
+              <div class="timeline-date">June 2022 - June 2023</div>
+            </div>
+          </div>
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Information Technology Help Desk Coordinator</div>
+              <div class="timeline-date">November 2020 - June 2022</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOB 2 — 1 position -->
+      <div class="timeline-item timeline-company">
+        <div class="timeline-dot timeline-dot-company"></div>
+        <div class="timeline-company-name">DMV IT Solutions</div>
+        <div class="timeline-company-range">2020 · District of Columbia</div>
+        <div class="timeline-positions">
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Information Technology Support Technician</div>
+              <div class="timeline-date">August 2020 - November 2020</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOB 1 — 2 positions (oldest) -->
+      <div class="timeline-item timeline-company">
+        <div class="timeline-dot timeline-dot-company"></div>
+        <div class="timeline-company-name">Giant Food</div>
+        <div class="timeline-company-range">2019 — 2020 · Westminster, MD</div>
+        <div class="timeline-positions">
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Overnight Stocker</div>
+              <div class="timeline-date">July 2020 - November 2020</div>
+            </div>
+          </div>
+          <div class="position-item">
+            <div class="position-dot"></div>
+            <div>
+              <div class="position-title">Cashier - Customer Service</div>
+              <div class="timeline-date">May 2019 - July 2020</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ── GOALS ── -->
+  <section id="goals">
+    <div class="section-header">
+      <span class="section-tag">03 //</span>
+      <h2>Development Goals</h2>
+    </div>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <div class="goal-num">01</div>
+        <div class="goal-title">Achieve Azure Administrator Associate</div>
+        <div class="goal-desc">Pass the AZ-104 exam and earn the Azure Administrator Associate credential to deepen my Azure expertise.</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-num">02</div>
+        <div class="goal-title">Terraform</div>
+        <div class="goal-desc">Strengthen my infrastructure-as-code skills to provision and manage cloud resources across various cloud environments.</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-num">03</div>
+        <div class="goal-title">GitLab</div>
+        <div class="goal-desc">Develop proficiency in GitLab for source control, CI/CD pipeline management, and workflows to streamline infrastructure automation and deployment processes.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span style="color:var(--accent)"></span>Last updated April 2026 &nbsp;·&nbsp; All Rights Reserved
+</footer>
+
+<script>
+  // Animate skill bars when in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.pct + '%';
+        });
+        entry.target.querySelectorAll('.goal-progress-fill').forEach(bar => {
+          bar.style.width = bar.dataset.pct + '%';
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('#skills, #goals').forEach(section => observer.observe(section));
+
+  // Typing cursor effect on tagline
+  const tagline = document.querySelector('.tagline');
+  const original = tagline.textContent;
+  tagline.textContent = '';
+  let i = 0;
+  const type = () => {
+    if (i < original.length) {
+      tagline.textContent += original[i++];
+      setTimeout(type, 28);
+    }
+  };
+  setTimeout(type, 600);
+</script>
+
+</body>
+</html>
